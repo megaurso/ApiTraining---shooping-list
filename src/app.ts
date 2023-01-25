@@ -1,11 +1,9 @@
-import express, {Application, Request, request, Response, response} from "express"
-
+import express, {Application} from "express"
+import { purchaseList } from "./logic"
 const app: Application = express()
 app.use(express.json())
 
-app.post("/", (request: Request, response: Response)=>{
-    return response.send("deu certo")
-})
+app.post("/purchaselist", purchaseList)
 
 app.listen(3000, ()=>{
     console.log("Server is running")

@@ -95,27 +95,53 @@ const updateListItem = (request: Request, response: Response): Response => {
   const indexItemForUpdate: number = request.itemList.indexItem;
   const findIndex = itens[indexItemForUpdate].data.findIndex(
     (elem) => elem.name === request.params.name
-    
   );
-  const dataItens = { ...itens[indexItemForUpdate].data[findIndex] };
-  if (request.params.name !== dataItens.name) {
+
+  if (findIndex === -1) {
     return response.status(404).json({
       message: `Item with name ${request.params.name} does not exist`,
     });
   }
-  // if (isNaN(+itens[indexItemForUpdate].data[findIndex])) {
-  //   return response.status(400).json({
-  //     message: "The list name need to be a string",
-  //   });
-  // }
-  // const keys: Array<string> = Object.keys(request.body);
-  // const valueProp = keys.find((elem) => elem === "quantity" || elem === "name");
-  // if (valueProp) {
-  //   return response.status(404).json({
-  //     message: 'Updatable fields are: "name" and "quantity"',
-  //   });
-  // }
-  
+
+ 
+    // Object.values(request.body).map((elem) => {
+    //   if (typeof elem != "string") {
+    //     return response.status(400).json({
+    //     message: "The list name need to be a string",
+    //     });
+    //   }
+    // });
+ 
+
+  if (request.body.quantity) {
+    if (typeof request.body.quantity != "string") {
+      return response.status(400).json({
+        message: "The list name need to be a string",
+      });
+    }
+  }
+
+  if (request.body.name) {
+    if (typeof request.body.name != "string") {
+      return response.status(400).json({
+        message: "The list name need to be a string",
+      });
+    }
+  }
+
+  const dataValues = ["quantity", "name"];
+  const dataItensName: boolean = Object.keys(request.body).every(
+    (key: string) => {
+      return dataValues.includes(key);
+    }
+  );
+
+  if (!dataItensName) {
+    return response.status(404).json({
+      message: 'Updatable fields are: "name" and "quantity"',
+    });
+  }
+
   itens[indexItemForUpdate].data[findIndex] = {
     ...itens[indexItemForUpdate].data[findIndex],
     ...request.body,

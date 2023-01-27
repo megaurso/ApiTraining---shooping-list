@@ -76,53 +76,59 @@ const deleteAllItem = (request: Request, response: Response): Response => {
   return response.status(204).send();
 };
 
-const deleteItem = (request: Request, response: Response): Response =>{
-  const indexItemToRemove: number = request.itemList.indexItem
+const deleteItem = (request: Request, response: Response): Response => {
+  const indexItemToRemove: number = request.itemList.indexItem;
   const findIndex = itens[indexItemToRemove].data.findIndex(
     (elem) => elem.name === request.params.name
   );
-  
-  const removeAll = itens[indexItemToRemove].data.splice(findIndex,findIndex)
-  if(findIndex === -1){
+
+  const removeAll = itens[indexItemToRemove].data.splice(findIndex, findIndex);
+  if (findIndex === -1) {
     return response.status(404).json({
-      message: `Item with name ${request.params.name} does not exist`
-    })
+      message: `Item with name ${request.params.name} does not exist`,
+    });
   }
-  return response.status(204).send()
-}
+  return response.status(204).send();
+};
 
 const updateListItem = (request: Request, response: Response): Response => {
   const indexItemForUpdate: number = request.itemList.indexItem;
   const findIndex = itens[indexItemForUpdate].data.findIndex(
     (elem) => elem.name === request.params.name
+    
   );
-  itens[indexItemForUpdate].data[findIndex] = {
-    ...itens[indexItemForUpdate].data[findIndex],
-    ...request.body,
-  };
   const dataItens = { ...itens[indexItemForUpdate].data[findIndex] };
-
   if (request.params.name !== dataItens.name) {
     return response.status(404).json({
       message: `Item with name ${request.params.name} does not exist`,
     });
   }
-
-  const keys: Array<string> = Object.keys(request.body)
-  const valueProp = keys.find((elem)=> elem === "quantity" || elem === "name")
-  if(valueProp){
-    return response.status(404).json({
-      message: "Updatable fields are: \"name\" and \"quantity\""
-    })
-  }
-
-  if (isNaN(+itens[indexItemForUpdate].data[findIndex])) {
-    return response.status(400).json({
-      message: "The list name need to be a string",
-    });
-  }
+  // if (isNaN(+itens[indexItemForUpdate].data[findIndex])) {
+  //   return response.status(400).json({
+  //     message: "The list name need to be a string",
+  //   });
+  // }
+  // const keys: Array<string> = Object.keys(request.body);
+  // const valueProp = keys.find((elem) => elem === "quantity" || elem === "name");
+  // if (valueProp) {
+  //   return response.status(404).json({
+  //     message: 'Updatable fields are: "name" and "quantity"',
+  //   });
+  // }
+  
+  itens[indexItemForUpdate].data[findIndex] = {
+    ...itens[indexItemForUpdate].data[findIndex],
+    ...request.body,
+  };
 
   return response.json(itens[indexItemForUpdate]);
 };
 
-export { purchaseList, getMyList, searchItem, deleteItem, updateListItem, deleteAllItem };
+export {
+  purchaseList,
+  getMyList,
+  searchItem,
+  deleteItem,
+  updateListItem,
+  deleteAllItem,
+};

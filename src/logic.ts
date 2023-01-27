@@ -82,8 +82,12 @@ const deleteItem = (request: Request, response: Response): Response =>{
     (elem) => elem.name === request.params.name
   );
   
-  const removeAll = itens[indexItemToRemove].data[findIndex]
-  removeAll.splice(findIndex,1)
+  const removeAll = itens[indexItemToRemove].data.splice(findIndex,findIndex)
+  if(findIndex === -1){
+    return response.status(404).json({
+      message: `Item with name ${request.params.name} does not exist`
+    })
+  }
   return response.status(204).send()
 }
 

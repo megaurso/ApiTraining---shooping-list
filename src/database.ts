@@ -1,5 +1,5 @@
-import { IListComplete } from "./interfaces"
+import { IListComplete } from "./interfaces";
 
-let itens : Array<IListComplete> = []
+let itens: Array<IListComplete> = [];
 
-export {itens}
+export { itens };

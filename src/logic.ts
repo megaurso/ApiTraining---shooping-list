@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { request, Request, Response } from "express";
 import { itens } from "./database";
 import { IListComplete, IListPost } from "./interfaces";
 
@@ -15,16 +15,16 @@ const validateList = (payload: IListPost): IListPost => {
   }
 
   const validateNameandQuantity = () => {
-    return payload.data.map((elem) => {
-      const newProp = ["name", "quantity"].every((proper) => {
-
-        return Object.keys(elem).includes(proper);
-      });
-      return newProp;
-    }).every((newObject:boolean)=> newObject == true);
-
+    return payload.data
+      .map((elem) => {
+        const newProp = ["name", "quantity"].every((proper) => {
+          return Object.keys(elem).includes(proper);
+        });
+        return newProp;
+      })
+      .every((newObject: boolean) => newObject == true);
   };
-  
+
   if (!validateNameandQuantity()) {
     throw new Error('Required fields are: "name" and "quantity"');
   }
@@ -58,4 +58,67 @@ const purchaseList = (request: Request, response: Response): Response => {
   }
 };
 
-export { purchaseList };
+const getMyList = (request: Request, response: Response): Response => {
+  return response.json(itens);
+};
+
+const searchItem = (request: Request, response: Response): Response => {
+  const indexItemSearch: number = request.itemList.indexItem;
+
+  return response.json(itens[indexItemSearch]);
+};
+
+const deleteAllItem = (request: Request, response: Response): Response => {
+  const indexItemToRemove: number = request.itemList.indexItem;
+
+  itens.splice(indexItemToRemove, 1);
+
+  return response.status(204).send();
+};
+
+const deleteItem = (request: Request, response: Response): Response =>{
+  const indexItemToRemove: number = request.itemList.indexItem
+  const findIndex = itens[indexItemToRemove].data.findIndex(
+    (elem) => elem.name === request.params.name
+  );
+  
+  const removeAll = itens[indexItemToRemove].data[findIndex]
+  removeAll.splice(findIndex,1)
+  return response.status(204).send()
+}
+
+const updateListItem = (request: Request, response: Response): Response => {
+  const indexItemForUpdate: number = request.itemList.indexItem;
+  const findIndex = itens[indexItemForUpdate].data.findIndex(
+    (elem) => elem.name === request.params.name
+  );
+  itens[indexItemForUpdate].data[findIndex] = {
+    ...itens[indexItemForUpdate].data[findIndex],
+    ...request.body,
+  };
+  const dataItens = { ...itens[indexItemForUpdate].data[findIndex] };
+
+  if (request.params.name !== dataItens.name) {
+    return response.status(404).json({
+      message: `Item with name ${request.params.name} does not exist`,
+    });
+  }
+
+  const keys: Array<string> = Object.keys(request.body)
+  const valueProp = keys.find((elem)=> elem === "quantity" || elem === "name")
+  if(valueProp){
+    return response.status(404).json({
+      message: "Updatable fields are: \"name\" and \"quantity\""
+    })
+  }
+
+  if (isNaN(+itens[indexItemForUpdate].data[findIndex])) {
+    return response.status(400).json({
+      message: "The list name need to be a string",
+    });
+  }
+
+  return response.json(itens[indexItemForUpdate]);
+};
+
+export { purchaseList, getMyList, searchItem, deleteItem, updateListItem, deleteAllItem };

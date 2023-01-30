@@ -82,13 +82,16 @@ const deleteItem = (request: Request, response: Response): Response => {
     (elem) => elem.name === request.params.name
   );
 
-  const removeAll = itens[indexItemToRemove].data.splice(findIndex, findIndex);
+  itens[indexItemToRemove].data.splice(findIndex, findIndex);
   if (findIndex === -1) {
     return response.status(404).json({
       message: `Item with name ${request.params.name} does not exist`,
     });
   }
-  return response.status(204).send();
+
+  return response.status(200).json({
+    message: `Item with name ${request.params.name} has been delete`
+  });
 };
 
 const updateListItem = (request: Request, response: Response): Response => {
@@ -98,20 +101,18 @@ const updateListItem = (request: Request, response: Response): Response => {
   );
 
   if (findIndex === -1) {
-    return response.status(404).json({
+    return response.status(400).json({
       message: `Item with name ${request.params.name} does not exist`,
     });
   }
 
- 
-    // Object.values(request.body).map((elem) => {
-    //   if (typeof elem != "string") {
-    //     return response.status(400).json({
-    //     message: "The list name need to be a string",
-    //     });
-    //   }
-    // });
- 
+  // Object.values(request.body).map((elem) => {
+  //   if (typeof elem != "string") {
+  //     return response.status(400).json({
+  //     message: "The list name need to be a string",
+  //     });
+  //   }
+  // });
 
   if (request.body.quantity) {
     if (typeof request.body.quantity != "string") {
@@ -137,7 +138,7 @@ const updateListItem = (request: Request, response: Response): Response => {
   );
 
   if (!dataItensName) {
-    return response.status(404).json({
+    return response.status(400).json({
       message: 'Updatable fields are: "name" and "quantity"',
     });
   }

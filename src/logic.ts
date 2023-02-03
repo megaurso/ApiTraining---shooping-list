@@ -17,8 +17,10 @@ const validateList = (payload: IListPost): IListPost => {
   const validateNameandQuantity = () => {
     return payload.data
       .map((elem) => {
-        const newProp = ["name", "quantity"].every((proper) => {
-          return Object.keys(elem).includes(proper);
+        const newProp = Object.keys(elem).every((proper) => {
+          return ["name", "quantity"].includes(proper);
+        // const newProp = ["name", "quantity"].every((proper) => {
+        //   return Object.keys(elem).includes(proper);
         });
         return newProp;
       })
